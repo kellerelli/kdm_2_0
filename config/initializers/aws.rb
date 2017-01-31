@@ -2,3 +2,4 @@
 require 'aws'
 require 'tables/dynamo_tables'
 require 'tables/Monsters'
+require 'tables/Items'

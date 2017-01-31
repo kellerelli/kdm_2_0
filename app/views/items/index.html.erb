@@ -1,0 +1,16 @@
+<h1>Listing users</h1>
+
+<table>
+  <thead>
+  <tr>
+    <th>Name</th>
+    <% @items.each do |monster| %>
+    <th><% link_to "Item", controller: "items", action: "show", id: monster["Name"]%></th>
+    <% end %>
+    <th colspan="3"></th>
+  </tr>
+  </thead>
+
+</table>
+
+<br>
