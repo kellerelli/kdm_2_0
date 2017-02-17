@@ -1,20 +1,82 @@
 class MonstersController < ApplicationController
+  before_action :set_monster, only: [:show, :edit, :update, :destroy]
+
+  # GET /monsters
+  # GET /monsters.json
   def index
-    @monsters = Monsters.index
+    @monsters = Monster.all
+  end
+
+  # GET /monsters/1
+  # GET /monsters/1.json
+  def show
+  end
+
+  # GET /monsters/new
+  def new
+    @monster = Monster.new
+  end
+
+  # GET /monsters/1/edit
+  def edit
+  end
+
+  # POST /monsters
+  # POST /monsters.json
+  def create
+    @monster = Monster.new(params[:monster])
+    @monster.save
+    #raise @monster.inspect
     respond_to do |format|
-      format.json { render :json => @monsters }
-      format.html
+      if @monster.save
+        format.html { redirect_to @monster, notice: 'Monster was successfully created.' }
+        format.json { render :show, status: :created, location: @monster }
+      else
+        format.html { render :new }
+        format.json { render json: @monster.errors, status: :unprocessable_entity }
+      end
     end
   end
 
-  def show
-    search_hash = {
-        :Id => params[:id].to_i
-    }
-    @monster = Monsters.show(search_hash)
+  # PATCH/PUT /monsters/1
+  # PATCH/PUT /monsters/1.json
+  def update
     respond_to do |format|
-      format.json { render :json => @monster }
-      format.html
+      if @monster.update(monster_params)
+        format.html { redirect_to @monster, notice: 'Monster was successfully updated.' }
+        format.json { render :show, status: :ok, location: @monster }
+      else
+        format.html { render :edit }
+        format.json { render json: @monster.errors, status: :unprocessable_entity }
+      end
     end
+  end
+
+  # DELETE /monsters/1
+  # DELETE /monsters/1.json
+  def destroy
+    @monster.destroy
+    respond_to do |format|
+      format.html { redirect_to monsters_url, notice: 'Monster was successfully destroyed.' }
+      format.json { head :no_content }
+    end
+  end
+
+  private
+  # Use callbacks to share common setup or constraints between actions.
+  def set_monster
+    sleep 2
+    @monster = Monster.find(params[:id])
+  end
+
+  def check_monster_exists
+    @monster = Monster.new(params[:monster])
+    monster_found = Monster.where(:monstername => @monster.monstername).all
+    raise monster_found.inspect unless monster_found.empty?
+  end
+
+  # Never trust parameters from the scary internet, only allow the white list through.
+  def monster_params
+    params.require(:monster).permit(:monstername)
   end
 end
