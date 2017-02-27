@@ -57,3 +57,4 @@ gem 'activemodel-serializers-xml'
 gem 'dynamoid', git: "https://github.com/Dynamoid/Dynamoid.git", branch: "master"
 gem 'bcrypt'
 ruby "2.4.0"
+gem 'pg'
