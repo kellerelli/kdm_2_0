@@ -55,3 +55,4 @@ gem 'aws-sdk'
 gem 'aws-sdk-core'
 gem 'activemodel-serializers-xml'
 gem 'dynamoid', git: "https://github.com/Dynamoid/Dynamoid.git", branch: "master"
+gem 'bcrypt'

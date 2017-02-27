@@ -1,12 +1,28 @@
 class User
+  require 'bcrypt'
+  # BCrypt hash function can handle maximum 72 characters, and if we pass
+  # password of length more than 72 characters it ignores extra characters.
+  # Hence need to put a restriction on password length.
+  MAX_PASSWORD_LENGTH_ALLOWED = 72
+
+
   include Dynamoid::Document
   field :username
-  field :password
+  field :password_digest
   field :auth_token
+  field :key_id
+  attr_reader :password
+  attr_reader :password_confirmation
+  # :has_secure_password
   before_create :generate_authentication_token!
   before_create :check_user_exists
+  before_create :validate_confirmation_password
 
   def generate_authentication_token!
+    begin
+      self.key_id = SecureRandom.uuid
+    end until User.where(:auth_token => self.key_id).all.empty?
+
     begin
       self.auth_token = SecureRandom.hex
     end until User.where(:auth_token => self.auth_token).all.empty?
@@ -18,6 +34,33 @@ class User
     unless user_found.empty?
       self.errors.add(:username, 'already exists') unless user_found.empty?
       raise Dynamoid::Errors::RecordNotUnique.new(Dynamoid::Errors::RecordNotUnique, self.username)
+    end
+  end
+
+  # This is so when :password is passed to be saved, it instead
+  # Saves a hashed version of it to the object
+  def password=(unencrypted_password)
+    if unencrypted_password.nil?
+      self.password_digest = nil
+    elsif !unencrypted_password.empty?
+      @password = unencrypted_password
+      cost = ActiveModel::SecurePassword.min_cost ? BCrypt::Engine::MIN_COST : BCrypt::Engine.cost
+      self.password_digest = BCrypt::Password.create(unencrypted_password, cost: cost)
+    end
+  end
+
+  def password_confirmation=(unencrypted_password)
+    @password_confirmation = unencrypted_password
+  end
+
+  def authenticate(unencrypted_password)
+    BCrypt::Password.new(password_digest).is_password?(unencrypted_password) && self
+  end
+
+  def validate_confirmation_password
+    unless authenticate(@password_confirmation)
+      self.errors.add(:username, 'Password does not match Password confirmation')
+      raise StandardError.new('Password does not match Password confirmation')
     end
   end
 

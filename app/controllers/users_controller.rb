@@ -1,5 +1,7 @@
 class UsersController < ApplicationController
   before_action :set_user, only: [:show, :edit, :update, :destroy]
+  before_action :authenticate_with_token!
+  before_action :authorized, only: [:show, :edit, :update, :destroy]
 
   # GET /users
   # GET /users.json
@@ -44,7 +46,10 @@ class UsersController < ApplicationController
   # PATCH/PUT /users/1.json
   def update
     respond_to do |format|
-      if @user.update(user_params)
+      puts "User params"
+      pp user_params
+      @user.update_attributes(user_params)
+      if @user.save
         format.html { redirect_to @user, notice: 'User was successfully updated.' }
         format.json { render :show, status: :ok, location: @user }
       else
@@ -71,9 +76,17 @@ class UsersController < ApplicationController
     @user = User.find(params[:id])
   end
 
+  def authorized
+    unless logged_in? && current_user.id.eql?(@user.id)
+      respond_to do |format|
+        format.html { render json: { errors: "Not Authorized" }, status: :unauthorized }
+        format.json { render json: { errors: "Not Authorized" }, status: :unauthorized }
+      end
+    end
+  end
 
   # Never trust parameters from the scary internet, only allow the white list through.
   def user_params
-    params.require(:user).permit(:username)
+    params.require(:user).permit(:username, :password, :password_confirmation)
   end
 end
