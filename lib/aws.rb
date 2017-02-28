@@ -20,13 +20,14 @@ module Aws
 
     if Rails.env.production?
       namespace = "dynamoid_app_production"
-      endpoint = nil
+      endpoint = "https://dynamodb.#{region}.amazonaws.com"
     end
+
 
     Aws.config.update({
                           region: region,
                           credentials: Aws::Credentials.new(access_key_id, secret_access_key),
-                          endpoint: 'http://localhost:8000'
+                          endpoint: endpoint
                       })
     @dynamo_db = Aws::DynamoDB::Client.new
 

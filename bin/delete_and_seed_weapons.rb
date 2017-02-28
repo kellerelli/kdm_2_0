@@ -23,5 +23,6 @@ string_data = csv_data.map {|row| row.map {|cell| cell.to_s } }
 items = string_data.map {|row| Hash[*headers.zip(row).flatten] }
 items.each do |item|
   Weapon.new(item).save
+  sleep 2
 end
 
