@@ -1,6 +1,6 @@
 class UsersController < ApplicationController
   before_action :set_user, only: [:show, :edit, :update, :destroy]
-  before_action :authenticate_with_token!
+  before_action :authenticate_with_token! #, only: [:show, :edit, :update, :destroy]
   before_action :authorized, only: [:show, :edit, :update, :destroy]
 
   # GET /users

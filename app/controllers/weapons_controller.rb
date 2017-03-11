@@ -5,8 +5,12 @@ class WeaponsController < ApplicationController
   # GET /weapons
   # GET /weapons.json
   def index
+    weapons = {}
+    Weapon.all.each do |weapon|
+      weapons[weapon.name] = weapon
+    end
     respond_to do |format|
-      format.json { render json: Weapon.all, status: :created }
+      format.json { render json: weapons, status: :created }
     end
   end
 
@@ -17,7 +21,6 @@ class WeaponsController < ApplicationController
       format.json { render json: Weapon.all, status: :created }
     end
   end
-
 
   private
   # Use callbacks to share common setup or constraints between actions.

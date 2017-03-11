@@ -16,6 +16,7 @@ module SessionsHelper
         User.where(id: session[:user_id]).all.first
       elsif !request.headers['HTTP_KEY_ID'].nil? && !request.headers['HTTP_AUTH_TOKEN'].nil?
         user = User.where(key_id: request.headers['HTTP_KEY_ID']).all.first
+        x= request.headers['HTTP_AUTH_TOKEN']
         if user.auth_token.eql? request.headers['HTTP_AUTH_TOKEN']
           puts "found user"
           user
