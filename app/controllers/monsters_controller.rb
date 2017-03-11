@@ -11,8 +11,11 @@ class MonstersController < ApplicationController
       monster.levels.each do |level|
         all_levels << level
       end
-      monsters[monster.name] = all_levels
-      monsters[monster.name][:id] = monster.id
+      monsters[monster.name] =
+          {
+              :levels => all_levels,
+              :id => monster.id
+          }
     end
     respond_to do |format|
       format.json { render json: monsters, status: :created }
